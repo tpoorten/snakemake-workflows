@@ -1,0 +1,29 @@
+{
+    "__default__" :
+    {
+        "account" : "tpoorten",
+        "time" : "12:00:00",
+        "c" : 1,
+        "n" : 1,
+        "partition" : "gc",
+        "mempercpu" : "4G"
+    },
+    "bwa_mem" :
+    {
+        "time" : "18:01:00",
+        "c" : 6,
+        "mempercpu" : "8G"     
+    },
+    "samtools_sort" :
+    {
+        "time" : "18:02:00",
+        "mempercpu" : "8G",
+        "c" : 2
+    },
+    "mark_duplicates" :
+    {
+        "time" : "18:03:00",
+        "mempercpu" : "6G",
+        "c" : 2
+    }
+}

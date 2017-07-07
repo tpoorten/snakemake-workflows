@@ -1,0 +1,56 @@
+configfile: "config.json"
+
+IDS=[line.rstrip('\n') for line in open(config["sample_names_file"])]
+
+rule dummy  :
+    message : "collect the target files"
+    input   : expand("mapped/{sample}.sorted.dedup.bam.bai", sample=IDS)
+
+rule bwa_mem:
+    input:
+        ref="genome.fasta",
+        sample=["02-Cleaned/{sample}/{sample}_R1.fastq", "02-Cleaned/{sample}/{sample}_R2.fastq"]
+    output:
+        temp("mapped/{sample}.bam")
+    log:
+        "logs/bwa_mem/{sample}.log"
+    params:
+        "-R '@RG\tID:{sample}\tSM:{sample}'"  # optional parameters for bwa mem (e.g. read group)
+    threads: 6
+    wrapper:
+        "0.15.4-1-gd9c0fe4/bio/bwa/mem"
+
+rule samtools_sort:
+    input:
+        "mapped/{sample}.bam"
+    output:
+        temp("mapped/{sample}.sorted.bam")
+    params:
+        "-m 4G"
+    threads: 4
+    wrapper:
+        "0.15.4-1-gd9c0fe4/bio/samtools/sort"
+
+## ERROR WITH READ GROUPS - Hack Fix by adding VALIDATION_STRINGENCY=SILENT; COULD ADD PICARD-ADDORREPLACEREADGROUPS RULE                
+rule mark_duplicates:
+    input:
+        "mapped/{sample}.sorted.bam"
+    output:
+        bam="mapped/{sample}.sorted.dedup.bam",
+        metrics="mapped/{sample}.dedup.metrics.txt"
+    log:
+        "logs/picard/dedup/{sample}.log"
+    params:
+        "REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=SILENT"
+    wrapper:
+        "0.15.4-1-gd9c0fe4/bio/picard/markduplicates"
+        
+rule samtools_index:
+    input:
+        "mapped/{sample}.sorted.dedup.bam"
+    output:
+        "mapped/{sample}.sorted.dedup.bam.bai"
+#    params:
+#        "" # optional params string
+    wrapper:
+        "0.15.4-1-gd9c0fe4/bio/samtools/index"
