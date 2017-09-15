@@ -4,7 +4,12 @@ Quiver (or Arrow) with Snakemake workflow
 
 Run with: `runQuiverSnakes.sh` or
 
-```snakemake -s Snakefile -p --cluster-config cluster.json --cluster "sbatch -p {cluster.partition} -n {cluster.n}  -t {cluster.time} -c {cluster.c} --mem-per-cpu {cluster.mempercpu}" -k -j 20 -w 10 --rerun-incomplete -n```
+```
+snakemake -s Snakefile -p --cluster-config cluster.json \
+--cluster "sbatch -p {cluster.partition} -n {cluster.n} \
+-t {cluster.time} -c {cluster.c} --mem-per-cpu {cluster.mempercpu}" \
+-k -j 20 -w 10 --rerun-incomplete -n
+```
 
 [Workflow](https://github.com/tpoorten/snakemake-workflows/blob/master/snake_quiver/workflowGraph.svg) - Based on [smrtlink manual, page 22](http://www.pacb.com/wp-content/uploads/SMRT-Tools-Reference-Guide-v4.0.0.pdf)
 * Align each batch (smrtcell) of subreads
