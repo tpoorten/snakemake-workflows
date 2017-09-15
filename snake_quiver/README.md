@@ -5,6 +5,13 @@ Quiver with Snakemake workflow
 Run with: `runQuiverSnakes.sh` or
 `snakemake -s Snakefile -p --cluster-config cluster.json --cluster "sbatch -p {cluster.partition} -n {cluster.n}  -t {cluster.time} -c {cluster.c} --mem-per-cpu {cluster.mempercpu}" -k -j 20 -w 10 --rerun-incomplete -n`
 
+Workflow (see workflowGraph.svg)
+* Align each batch (smrtcell) of subreads
+* Sort, index each alignment bam
+* Make and merge alignment xmls
+* Split xml alignment dataset into chunks, by contigs
+* Run Quiver/Arrow on each chunk, merge output fastas
+
 Dependencies
 * snakemake
 * smrtlink-release_5.0.1.9585
@@ -12,4 +19,4 @@ Dependencies
 Notes
 * Cluster config setting are written for Slurm
 * PacBio subreads bam files generated with `bax2bam`
-
+* Set config params in config.json, cluster.json
