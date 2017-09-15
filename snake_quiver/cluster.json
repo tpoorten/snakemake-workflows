@@ -1,0 +1,36 @@
+{
+    "__default__" :
+    {
+        "account" : "tpoorten",
+        "time" : "1:00:00",
+        "c" : 1,
+        "n" : 1,
+        "partition" : "gc",
+        "mempercpu" : "4G"
+    },
+    "quiver" :
+    {
+        "time" : "24:00:00",
+        "c" : 8,
+        "mempercpu" : "5G"
+    },
+    "makeAlignmentXmls" :
+    {
+        "time" : "1:00:00",
+        "c" : 1,
+        "mempercpu" : "4G"
+    },
+    "sort" :
+    {
+        "time" : "3:00:00",
+        "c" : 1,
+        "mempercpu" : "4G"
+    },
+    "blasr" :
+    {
+        "time" : "12:00:00",
+        "c" : 8,
+        "mempercpu" : "5G"     
+    }
+}
+

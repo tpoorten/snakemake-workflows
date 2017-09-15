@@ -1,0 +1,2 @@
+smrtcell1_s1_p0.subreads
+smrtcell2_s1_p0.subreads

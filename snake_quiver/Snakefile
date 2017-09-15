@@ -1,0 +1,87 @@
+configfile: "config.json"
+
+IDS=[line.rstrip('\n') for line in open(config["bamsList"])]
+CONTIGS=config["contigs"]
+CHUNKS=config["numberOfContigChunks"]
+CPUSBLASR=config["cpusBlasr"]
+CPUSVC=config["cpusVariantCaller"]
+ALGORITHM=config["algorithmVariantCaller"]
+
+rule all     :
+     message : "collect the target files"
+     input   : "quiverOut/quiver_consensus.fasta"
+
+rule concat  :
+     message : "concatenate finished seqs"
+     input   : dynamic("quiverOut/chunk{chk}consensus.fasta")
+     output  : "quiverOut/quiver_consensus.fasta"
+     shell   : "cat {input} > {output}"
+
+rule quiver  :
+     message : "run quiver"
+     input   : "mappedXmlChunks/merged.chunk{chk}.alignmentset.xml"
+     output  : "quiverOut/chunk{chk}consensus.fasta"
+     params  : cpus=CPUSVC, algorithm=ALGORITHM
+     shell   : """
+variantCaller --alignmentSetRefWindows \
+--referenceFilename Fvb_allref_addUnanchor_clean2.xml \
+--outputFilename {output} \
+--algorithm {params.algorithm} \
+-j {params.cpus} \
+{input}
+"""
+
+rule splitXmls  :
+     message : "split xmls"
+     input   : "mappedXml/merged.alignmentset.xml"
+     output  : dynamic("mappedXmlChunks/merged.chunk{chk}.alignmentset.xml")
+     params  : chunks=CHUNKS
+     shell   : "dataset split --contigs --chunks {params.chunks} {input}"
+
+rule mergeXmls	:
+     message : "merge xmls"
+     input   : expand("mappedXml/{sample}.mapped.xml", sample=IDS)
+     output  : "mappedXml/merged.alignmentset.xml"
+     shell   : "dataset merge {output} {input}"
+
+rule makeAlignmentXmls  :
+     message : "make alignmentset xml"
+     input   : 
+     	bam="mappedSorted/{sample}.mapped.bam",
+     	samtoolsindex="mappedSorted/{sample}.mapped.bam.bai",
+     	pbindex="mappedSorted/{sample}.mapped.bam.pbi"
+     output  : "mappedXml/{sample}.mapped.xml"
+     shell   : "dataset create --type AlignmentSet {output} {input.bam}"
+
+rule pbindex  :
+     message : "pbindex sorted alignments"
+     input   : "mappedSorted/{sample}.mapped.bam"
+     output  : "mappedSorted/{sample}.mapped.bam.pbi"
+     shell   : "pbindex {input}"
+
+rule index  :
+     message : "index sorted alignments"
+     input   : "mappedSorted/{sample}.mapped.bam"
+     output  : "mappedSorted/{sample}.mapped.bam.bai"
+     shell   : "samtools index {input} {output}"
+
+rule sort  :
+     message : "sort blasr alignments"
+     input   : "mapped/{sample}.mapped.bam"
+     output  : "mappedSorted/{sample}.mapped.bam"
+     shell   : "samtools sort {input} -o {output}"
+
+rule blasr  :
+     message : "running blasr"
+     input   : "bams/{sample}.bam"
+     output  : temp("mapped/{sample}.mapped.bam")
+     params  : cpus=CPUSBLASR
+     shell   : """
+blasr {input} \
+{CONTIGS} \
+--out {output}  \
+--bam  --bestn 10 --minMatch 12  --maxMatch 30  --nproc {params.cpus}  --minSubreadLength 50 --minAlnLength 50  \
+--minPctAccuracy 70 --hitPolicy randombest  --concordant  --randomSeed 1  \
+--minPctSimilarity 70.0 --refineConcordantAlignments
+"""
+

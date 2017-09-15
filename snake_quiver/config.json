@@ -1,0 +1,9 @@
+{
+        "bamsList" : "bams.txt",
+	"contigs" : "/path/contigs.fa",
+	"numberOfContigChunks" : "3",
+	"cpusBlasr" : "8",
+	"cpusVariantCaller" : "8",
+	"algorithmVariantCaller" : "quiver",
+	"_comment" : "cpu params should match values in cluster.json"
+}
