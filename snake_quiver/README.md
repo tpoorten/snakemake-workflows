@@ -23,6 +23,6 @@ Dependencies
 * smrtlink-release_5.0.1.9585
 
 Notes
-* Cluster config setting are written for Slurm
+* Cluster config settings are written for Slurm
 * PacBio subreads bam files generated with `bax2bam`
 * Set config params in config.json, cluster.json
