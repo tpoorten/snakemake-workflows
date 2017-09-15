@@ -18,8 +18,8 @@ snakemake -s Snakefile -p --cluster-config cluster.json \
 * Split xml alignment dataset into chunks, by contigs
 * Run Quiver/Arrow on each chunk, merge output fastas
 
-Dependencies
-* snakemake
+Tested with:
+* snakemake v4.0.0
 * smrtlink-release_5.0.1.9585
 
 Notes
