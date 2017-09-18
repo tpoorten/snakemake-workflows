@@ -19,12 +19,12 @@ rule concat  :
 
 rule quiver  :
      message : "run quiver"
-     input   : "mappedXmlChunks/merged.chunk{chk}.alignmentset.xml"
+     input   : "mappedXml/merged.chunk{chk}.alignmentset.xml"
      output  : "quiverOut/chunk{chk}consensus.fasta"
      params  : cpus=CPUSVC, algorithm=ALGORITHM
      shell   : """
 variantCaller --alignmentSetRefWindows \
---referenceFilename Fvb_allref_addUnanchor_clean2.xml \
+--referenceFilename {CONTIGS}.xml \
 --outputFilename {output} \
 --algorithm {params.algorithm} \
 -j {params.cpus} \
@@ -34,7 +34,7 @@ variantCaller --alignmentSetRefWindows \
 rule splitXmls  :
      message : "split xmls"
      input   : "mappedXml/merged.alignmentset.xml"
-     output  : dynamic("mappedXmlChunks/merged.chunk{chk}.alignmentset.xml")
+     output  : dynamic("mappedXml/merged.chunk{chk}.alignmentset.xml")
      params  : chunks=CHUNKS
      shell   : "dataset split --contigs --chunks {params.chunks} {input}"
 
