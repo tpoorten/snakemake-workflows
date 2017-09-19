@@ -3,7 +3,6 @@ configfile: "config.json"
 IDS=[line.rstrip('\n') for line in open(config["bamsList"])]
 CONTIGS=config["contigs"]
 CHUNKS=config["numberOfContigChunks"]
-CHK=map(str, range(int(CHUNKS)))
 CPUSBLASR=config["cpusBlasr"]
 CPUSVC=config["cpusVariantCaller"]
 ALGORITHM=config["algorithmVariantCaller"]
