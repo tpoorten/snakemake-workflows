@@ -3,6 +3,7 @@ configfile: "config.json"
 IDS=[line.rstrip('\n') for line in open(config["bamsList"])]
 CONTIGS=config["contigs"]
 CHUNKS=config["numberOfContigChunks"]
+CHK=map(str, range(int(CHUNKS)))
 CPUSBLASR=config["cpusBlasr"]
 CPUSVC=config["cpusVariantCaller"]
 ALGORITHM=config["algorithmVariantCaller"]
@@ -13,7 +14,7 @@ rule all     :
 
 rule concat  :
      message : "concatenate finished seqs"
-     input   : dynamic("quiverOut/chunk{chk}consensus.fasta")
+     input   : expand("quiverOut/chunk{chunks}consensus.fasta", chunks=CHK)
      output  : "quiverOut/quiver_consensus.fasta"
      shell   : "cat {input} > {output}"
 
