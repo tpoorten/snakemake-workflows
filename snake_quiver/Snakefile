@@ -14,7 +14,7 @@ rule all     :
 
 rule concat  :
      message : "concatenate finished seqs"
-     input   : expand("quiverOut/chunk{chunks}consensus.fasta", chunks=CHK)
+     input   : dynamic("quiverOut/chunk{chk}consensus.fasta")
      output  : "quiverOut/quiver_consensus.fasta"
      shell   : "cat {input} > {output}"
 
