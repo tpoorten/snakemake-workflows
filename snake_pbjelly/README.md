@@ -1,6 +1,6 @@
 # snake_pbjelly
 
-Using Snakemake to part of the PBJelly pipeline                  
+Using Snakemake to run part of the PBJelly pipeline                  
 
 There are 6 steps in the PBJelly pipeline: setup, mapping, support, extraction, assembly, output
 
