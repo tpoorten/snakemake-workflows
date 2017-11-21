@@ -1,0 +1,49 @@
+shell.prefix("source config.sh; set -eo pipefail ; ")
+
+configfile: "config.json"
+
+IDS=[line.rstrip('\n') for line in open(config["readsList"])]
+
+rule all       :
+     message : "collect the target files"
+     input   : expand("supported/{sample}.gml", sample=IDS)
+
+rule support   :
+     message : "running Support.py"
+     input   : Mapped="mapped/{sample}.corrected.m4",
+               Asm="data/assembly/lambda.gapInfo.bed"
+     output  : "supported/{sample}.gml"
+     shell   : """
+python2.7 /home/tpoorten/opt/src/PBSuite_15.8.24/bin/Support.py \
+{input.Mapped} \
+{input.Asm} \
+{output}
+"""
+
+
+rule m4pie   :
+     message : "running m4pie.py"
+     input   : Mapped="mapped/{sample}.m4",
+               Reads="data/reads/{sample}",
+               Asm="data/assembly/lambda.fasta"
+     output  : "mapped/{sample}.corrected.m4"
+     shell   : """
+python2.7 /home/tpoorten/opt/src/PBSuite_15.8.24/bin/m4pie.py {input.Mapped} \
+{input.Reads} \
+{input.Asm} \
+-o {output} 
+"""
+
+rule blasr  :
+     message : "running blasr"
+     input   : Reads="data/reads/{sample}",
+               Asm="data/assembly/lambda.fasta"
+     output  : temp("mapped/{sample}.m4")
+     shell   : """
+blasr {input.Reads} \
+{input.Asm} \
+-sa {input.Asm}.sa \
+-m 4 -out {output} \
+-minMatch 8 -sdpTupleSize 8 -minPctIdentity 75 -bestn 1 -nCandidates 10 -maxScore -500 -nproc 6 -noSplitSubreads 
+"""
+

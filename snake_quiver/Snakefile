@@ -13,7 +13,7 @@ rule all     :
 
 rule concat  :
      message : "concatenate finished seqs"
-     input   : dynamic("quiverOut/chunk{chk}consensus.fasta")
+     input   : expand(dynamic("quiverOut/chunk{chk}consensus.fasta"))
      output  : "quiverOut/quiver_consensus.fasta"
      shell   : "cat {input} > {output}"
 

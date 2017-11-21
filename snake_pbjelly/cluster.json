@@ -1,0 +1,30 @@
+{
+    "__default__" :
+    {
+        "account" : "tpoorten",
+        "time" : "2:00:00",
+        "c" : 1,
+        "n" : 1,
+        "partition" : "gc",
+        "mempercpu" : "4G"
+    },
+    "support" :
+    {   
+        "time" : "2:00:00",
+        "c" : 1,
+        "mempercpu" : "4G"
+    },
+    "m4pie" :
+    {   
+        "time" : "2:00:00",
+        "c" : 1,
+        "mempercpu" : "4G"
+    },
+    "blasr" :
+    {
+        "time" : "12:00:00",
+        "c" : 6,
+        "mempercpu" : "5G"     
+    }
+}
+
