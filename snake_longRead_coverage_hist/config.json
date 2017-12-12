@@ -1,0 +1,6 @@
+{
+        "readsList" : "reads.fofn",
+	"assembly" : "asms.fofn",
+	"cpusMinimap2" : "2"
+}
+

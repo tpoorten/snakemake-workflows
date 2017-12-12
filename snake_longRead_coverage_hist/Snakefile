@@ -1,0 +1,65 @@
+configfile: "config.json"
+
+ASSEMBLYBASE=[".".join(line.rstrip('\n').split('/')[-1].split(".")[:-1]) for line in open(config["assembly"])]
+READS=[line.rstrip('\n') for line in open(config["readsList"])]
+CPUSMINIMAP=config["cpusMinimap2"]
+
+rule all :
+    message : "collect the target files"
+    input   : expand("coverage/{asm}_aligned_reads_primary.Coverage.pdf", asm=ASSEMBLYBASE)
+
+rule coveragePlot :
+    message : "make coverage plot"
+    input : "coverage/{asm}_aligned_reads_primary.Coverage.bed"
+    output : "coverage/{asm}_aligned_reads_primary.Coverage.pdf"
+    shell : """
+    python ./scripts/cov_hist.py {input}
+    """
+
+
+rule getCoverage :
+    message : "get coverage"
+    input : aln="aligned/{asm}_aligned_reads_primary.bed", win="asms/{asm}_genome_windows.bed"
+    output : "coverage/{asm}_aligned_reads_primary.Coverage.bed"
+    shell : """
+    coverageBed -a {input.win} \
+    -b {input.aln} -mean > \
+    {output}
+    """
+
+rule makeBed :
+    message : "make bed format"
+    input : "aligned/{asm}_aligned_reads_primary.txt"
+    output : "aligned/{asm}_aligned_reads_primary.bed"
+    shell : """
+    awk '{{print $6 "\t" $8 "\t" $9}}' {input} | sort -k 1,1 > {output}
+    """
+
+rule filterAlignments :
+    message : "filter out secondary alignments"
+    input : "aligned/{asm}_aligned_reads.txt"
+    output : "aligned/{asm}_aligned_reads_primary.txt"
+    shell : """
+    grep 'tp:A:P' {input} > {output}
+    """
+     
+rule mapping :
+    message : "map reads"
+    input : reads=READS, asm="asms/{asm}.fasta", dummy="asms/{asm}_genome_windows.bed"
+    output : "aligned/{asm}_aligned_reads.txt"
+    params : cpus=CPUSMINIMAP
+    shell : """
+    minimap2 -x map-pb -t {params.cpus} {input.asm} {input.reads} > {output}
+    """
+
+rule prepAssembly :
+    message : "prep assembly"
+    input : asm="asms/{asm}.fasta"
+    output : "asms/{asm}_genome_windows.bed"
+    shell : """
+    # get contig sizes
+    samtools faidx {input.asm}
+    cut -f1,2 {input.asm}.fai > {input.asm}.genome
+    # bedtools make windows
+    bedtools makewindows -g {input.asm}.genome -w 100 > {output} 
+    """
