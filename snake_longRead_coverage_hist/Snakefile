@@ -3,6 +3,7 @@ configfile: "config.json"
 ASSEMBLYBASE=[".".join(line.rstrip('\n').split('/')[-1].split(".")[:-1]) for line in open(config["assembly"])]
 READS=[line.rstrip('\n') for line in open(config["readsList"])]
 CPUSMINIMAP=config["cpusMinimap2"]
+WINDOWSIZE=config["coverage_window_size"]
 
 rule all :
     message : "collect the target files"
@@ -19,7 +20,7 @@ rule coveragePlot :
 
 rule getCoverage :
     message : "get coverage"
-    input : aln="aligned/{asm}_aligned_reads_primary.bed", win="asms/{asm}_genome_windows.bed"
+    input : aln="aligned/{asm}_aligned_reads_primary.bed", win="asms/{asm}_genome_windows"+WINDOWSIZE+"bp.bed"
     output : "coverage/{asm}_aligned_reads_primary.Coverage.bed"
     shell : """
     coverageBed -a {input.win} \
@@ -45,7 +46,7 @@ rule filterAlignments :
      
 rule mapping :
     message : "map reads"
-    input : reads=READS, asm="asms/{asm}.fasta", dummy="asms/{asm}_genome_windows.bed"
+    input : reads=READS, asm="asms/{asm}.fasta", dummy="asms/{asm}_genome_windows"+WINDOWSIZE+"bp.bed"
     output : "aligned/{asm}_aligned_reads.txt"
     params : cpus=CPUSMINIMAP
     shell : """
@@ -55,11 +56,12 @@ rule mapping :
 rule prepAssembly :
     message : "prep assembly"
     input : asm="asms/{asm}.fasta"
-    output : "asms/{asm}_genome_windows.bed"
+    output : "asms/{asm}_genome_windows"+WINDOWSIZE+"bp.bed"
+    params : WINDOWSIZE
     shell : """
     # get contig sizes
     samtools faidx {input.asm}
     cut -f1,2 {input.asm}.fai > {input.asm}.genome
     # bedtools make windows
-    bedtools makewindows -g {input.asm}.genome -w 100 > {output} 
+    bedtools makewindows -g {input.asm}.genome -w {params} > {output} 
     """

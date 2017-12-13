@@ -1,6 +1,7 @@
 {
-        "readsList" : "reads.fofn",
-	"assembly" : "asms.fofn",
-	"cpusMinimap2" : "2"
+    "readsList" : "reads.fofn",
+    "assembly" : "asms.fofn",
+    "cpusMinimap2" : "2",
+    "coverage_window_size" : "100"
 }
 
