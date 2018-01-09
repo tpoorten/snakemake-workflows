@@ -26,3 +26,4 @@ Notes
 * Cluster config settings are written for Slurm
 * PacBio subreads bam files generated with `bax2bam`
 * Set config params in config.json, cluster.json
+* Need to make index for reference prior to running (TODO add to workflow)
