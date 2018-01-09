@@ -1,6 +1,8 @@
 # Generate coverage histograms for long-read alignments to assemblies
 [Workflow DAG](https://github.com/tpoorten/snakemake-workflows/blob/master/snake_longRead_coverage_hist/dag.png)
 
+[Example plot](https://github.com/tpoorten/snakemake-workflows/blob/master/snake_longRead_coverage_hist/example_plot.pdf)
+
 Set up:
 
 * edit config.json
